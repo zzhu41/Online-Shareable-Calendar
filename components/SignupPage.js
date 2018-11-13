@@ -6,7 +6,7 @@ import { StyleSheet, Text, View, Dimensions, TextInput, TouchableOpacity, Button
 /**
  * Login Page
  */
-export default class ProfilePage extends React.Component {
+export default class SignupPage extends React.Component {
 
     static navigationOptions = {
         header: null
