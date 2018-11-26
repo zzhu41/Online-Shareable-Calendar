@@ -6,8 +6,25 @@ import ProfilePage from './components/ProfilePage';
 import SignupPage from './components/SignupPage';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator, TabNavigator } from 'react-navigation';
 import { StyleSheet, Text, View, AsyncStorage } from 'react-native';
-
+import firebase from 'firebase';
+import config from './config';
+import SendPostPage from './components/SendPostPage';
+import ExplorePage from './components/ExplorePage';
 export default class App extends React.Component {
+
+  componentWillMount() {
+    
+    // firebase.initializeApp(config);
+    // console.log(firebase)
+    // firebase.database().ref('users/001').set({
+    //   name: 'jerry',
+    //   age: 21
+    // }).then((() => {
+    //   console.log('success')
+    // })).catch((error) => {
+    //   console.log(error);
+    // })
+  }
 
   render() {
     return (
@@ -25,6 +42,12 @@ const Auth = createStackNavigator({
   },
   Signup: {
     screen: SignupPage
+  },
+  SendPost: {
+    screen: SendPostPage
+  },
+  Explore: {
+    screen: ExplorePage
   }
 })
 
@@ -32,6 +55,9 @@ const APP = createSwitchNavigator({
   Auth: Auth,
   Main: {
     screen: MainPage
+  },
+  Explore: {
+    screen: ExplorePage
   }
 })
 

@@ -8,6 +8,7 @@ import { FloatingAction } from 'react-native-floating-action';
 import ActionButton from 'react-native-action-button';
 import Modal from 'react-native-modalbox';
 import Button from 'react-native-button';
+import CalendarStrip from 'react-native-calendar-strip';
 /**
  * Login Page
  */
@@ -26,7 +27,8 @@ export default class TimeTable extends React.Component {
                 {time: '12:00', title: 'Test Event 3', description: 'Event 3 Description'},
                 {time: '14:00', title: 'Test Event 4', description: 'Event 4 Description'},
                 {time: '16:30', title: 'Test Event 5', description: 'Event 5 Description'}
-            ]
+            ],
+            date: ''
         }
     }
     /**
@@ -35,15 +37,25 @@ export default class TimeTable extends React.Component {
      */
     render() {
         return (
-            <Container>
-                <Header>
-                <Body>
-                    <Text>
-                        Calendar
-                    </Text>
-                </Body>
-                </Header>
+            <Container >
                 <ScrollView>
+                    <CalendarStrip 
+                        style={{height:150, paddingTop: 40, paddingBottom: 10}}
+                        onDateSelected = {
+                            (selectDate) => {
+                                const dateKey = selectDate.toString().substring(0,15);
+                                this.setState({
+                                    date: dateKey
+                                })
+                                console.log(dateKey);
+                            }
+                        }
+                    />
+                    <View>
+                        <Text>
+                            {this.state.date}
+                        </Text>
+                    </View> 
                     <Timeline
                         style={{ paddingTop: 30}}
                         data={this.state.data}
