@@ -1,6 +1,8 @@
 import React from 'react';
 import MainPage from './MainPage'
 import { StyleSheet, Text, View, Dimensions, TextInput, TouchableOpacity, Button, AsyncStorage, Alert} from 'react-native';
+import { config, hashCode } from '../config';
+import firebase from 'firebase';
 
 /**
  * Login Page
@@ -29,9 +31,13 @@ export default class LoginPage extends React.Component {
    * navigate to the main page
    */
   async onPressNavigate() {
-    const password = await AsyncStorage.getItem('password');
-    const username = await AsyncStorage.getItem('username');
-    if (this.state.username === username && this.state.password === password) {
+    // verify usrename and password, password is hashed.
+    let password = '';
+    await firebase.database().ref(`users/${this.state.username}`).once('value', (data) => {
+      password = data.toJSON().password;
+    })
+    if (hashCode(this.state.password) === password) {
+      await AsyncStorage.setItem('username', this.state.username);
       this.props.navigation.navigate('Main')
     } else {
       Alert.alert(

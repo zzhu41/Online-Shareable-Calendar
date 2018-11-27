@@ -22,6 +22,9 @@ export default class ProfilePage extends React.Component {
     }
     
     async componentWillMount() {
+        // await firebase.database().ref(`users/${this.state.username}`).once('value', (data) => {
+        //     password = data.toJSON().password;
+        // })
         const location = await AsyncStorage.getItem('location');
         const username = await AsyncStorage.getItem('username');
         const DOB = await AsyncStorage.getItem('date of birth');

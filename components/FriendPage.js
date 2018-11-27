@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, AlertIOS } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, AlertIOS, RefreshControl } from 'react-native';
 import { DrawerNavigator } from 'react-navigation';
 import Timeline from 'react-native-timeline-listview'
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
@@ -11,6 +11,26 @@ import Button from 'react-native-button';
 
 export default class FriendPage extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            refreshing: false
+        }
+    }
+
+    _onRefresh = () => {
+        this.setState({
+            refreshing: true
+        });
+        this.setState({
+            refreshing: false
+        });
+    }
+    
+    componentWillMount() {
+
+    }
+
     render() {
         return (
             <Container>
@@ -21,6 +41,16 @@ export default class FriendPage extends React.Component {
                     </Text>
                 </Body>
                 </Header>
+                <ScrollView 
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this._onRefresh}
+                        />
+                    }>    
+                    <Content>
+                    </Content>
+                </ScrollView>
             </Container>
         );
     }

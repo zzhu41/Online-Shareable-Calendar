@@ -1,7 +1,8 @@
 import React from 'react';
 import { DrawerNavigator } from 'react-navigation';
 import { StyleSheet, Text, View, Dimensions, TextInput, TouchableOpacity, Button, AsyncStorage } from 'react-native';
-
+import { config, hashCode } from '../config';
+import firebase from 'firebase';
 
 /**
  * Login Page
@@ -24,11 +25,17 @@ export default class SignupPage extends React.Component {
     }
     
     async onPressNavigate() {
-        await AsyncStorage.setItem('name',this.state.name);
-        await AsyncStorage.setItem('username',this.state.username);
-        await AsyncStorage.setItem('password',this.state.password);
-        await AsyncStorage.setItem('DOB',this.state.DOB);
-        await AsyncStorage.setItem('location',this.state.location);
+        !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
+        firebase.database().ref(`users/${this.state.username}`).set({
+          name: this.state.name,
+          password: hashCode(this.state.password),
+          DOB: this.state.DOB,
+          location: this.state.location
+        }).then((() => {
+          console.log('sign up success')
+        })).catch((error) => {
+          console.log(error);
+        })
         this.props.navigation.navigate('Login');
     }
     /**
@@ -68,9 +75,9 @@ export default class SignupPage extends React.Component {
                             placeholderTextColor = 'steelblue' 
                             style = {styles.input}
                             onChangeText={(text) => 
-                            this.setState({
-                                location:text
-                            })
+                                this.setState({
+                                    location:text
+                                })
                             }
                         />
                         <TextInput 

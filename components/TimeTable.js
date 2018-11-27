@@ -65,16 +65,17 @@ export default class TimeTable extends React.Component {
                     buttonColor="rgba(231,76,60,1)"
                     onPress = {
                         () => { 
-                            let ndata = {};
-                            ndata['time'] = '18:00';
-                            ndata['title'] = 'new Event';
-                            ndata['description'] = 'new Event for test';
-                            let dataNew = this.state.data
-                            dataNew.push(ndata);
-                            console.log(dataNew)
-                            this.setState({
-                                data: dataNew
-                            })
+                            this.props.navigation.navigate('SetTime');
+                            // let ndata = {};
+                            // ndata['time'] = '18:00';
+                            // ndata['title'] = 'new Event';
+                            // ndata['description'] = 'new Event for test';
+                            // let dataNew = this.state.data
+                            // dataNew.push(ndata);
+                            // console.log(dataNew)
+                            // this.setState({
+                            //     data: dataNew
+                            // })
                         }
                     }
                 />
