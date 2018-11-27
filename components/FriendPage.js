@@ -103,7 +103,7 @@ export default class FriendPage extends React.Component {
                         <ListItem 
                             key = {i}
                             title={`${l.username}`}
-                            onPress = {()=>{console.log(l)}}
+                            onPress = {()=>{this.props.navigation.navigate('Profile')}}
                             hideChevron
                         />
                         ))

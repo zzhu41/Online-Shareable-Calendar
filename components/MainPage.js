@@ -55,6 +55,15 @@ const Explore = createStackNavigator({
     }
 })
 
+const Friends = createStackNavigator({
+    Friends: {
+        screen: FriendPage
+    },
+    Profile: {
+        screen: ProfilePage
+    }
+})
+
 const TabNavigator = createBottomTabNavigator({
     Calendar: Time,
     Friends: FriendPage,
