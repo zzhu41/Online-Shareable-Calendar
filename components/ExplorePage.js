@@ -41,7 +41,7 @@ export default class ExplorePage extends React.Component {
                 postList: Object.values(data.toJSON())
             })
         })
-        console.log(this.state.postList)
+        //console.log(this.state.postList)
     }
 
     render() {
@@ -68,7 +68,22 @@ export default class ExplorePage extends React.Component {
                             key = {i}
                             title={`${l.postContext}`}
                             subtitle={`user: ${l.username}`}
-                            onLongPress 
+                            onLongPress = {
+                                () => {
+                                    Alert.alert(
+                                        'Delete',
+                                        undefined,
+                                        [
+                                            {text: 'Delete', onPress: async() => {
+                                                !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
+                                                firebase.database().ref(`posts/${l.username}-${l.date}`).remove()
+                                            }},
+                                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                                        ],
+                                        { cancelable: false }
+                                      )
+                                }
+                            }
                             hideChevron
                         />
                         ))

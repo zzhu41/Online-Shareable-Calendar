@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, AlertIOS } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, AlertIOS,AsyncStorage } from 'react-native';
 import { DrawerNavigator } from 'react-navigation';
 import Timeline from 'react-native-timeline-listview'
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
@@ -9,6 +9,9 @@ import ActionButton from 'react-native-action-button';
 import Modal from 'react-native-modalbox';
 import Button from 'react-native-button';
 import CalendarStrip from 'react-native-calendar-strip';
+import { config, hashCode } from '../config';
+import firebase from 'firebase';
+
 /**
  * Login Page
  */
@@ -17,19 +20,32 @@ export default class TimeTable extends React.Component {
     static navigationOptions = {
         header: null
     }
-    
+
     constructor(props) {
         super(props);
+        let today = new Date()
         this.state = {
             data : [
-                {time: '09:00', title: 'Test Event 1', description: 'Event 1 Description'},
-                {time: '10:45', title: 'Test Event 2', description: 'Event 2 Description'},
-                {time: '12:00', title: 'Test Event 3', description: 'Event 3 Description'},
-                {time: '14:00', title: 'Test Event 4', description: 'Event 4 Description'},
-                {time: '16:30', title: 'Test Event 5', description: 'Event 5 Description'}
+                {time: '09:00', title: 'Wake Up', description: 'Event Description'}
             ],
-            date: ''
+            date: '',
+            displayDay: today.toString().substring(3,15)
         }
+    }
+
+    async componentWillMount() {
+        const username = await AsyncStorage.getItem('username');
+        !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
+        firebase.database().ref(`users/${username}/calendar/${this.state.displayDay}`).on('value', (data) => {
+            console.log(data.toJSON())
+            let calendarArr = []
+            for (const prop in data.toJSON()) {
+                calendarArr.push({time:data.toJSON()[prop].time, title: data.toJSON()[prop].event, description: data.toJSON()[prop].description})
+            }
+            this.setState({
+                data: calendarArr
+            })
+        })
     }
     /**
      * Render function
@@ -42,19 +58,29 @@ export default class TimeTable extends React.Component {
                     <CalendarStrip 
                         style={{height:150, paddingTop: 40, paddingBottom: 10}}
                         onDateSelected = {
-                            (selectDate) => {
-                                const dateKey = selectDate.toString().substring(0,15);
+                            async (selectDate) => {
+                                console.log(selectDate)
+                                let dateKey = selectDate.toString().substring(3,15);
                                 this.setState({
-                                    date: dateKey
+                                    displayDay: dateKey
                                 })
-                                console.log(dateKey);
+                                const username = await AsyncStorage.getItem('username');
+                                !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
+                                firebase.database().ref(`users/${username}/calendar/${this.state.displayDay}`).on('value', (data) => {
+                                    console.log(data.toJSON())
+                                    let calendarArr = []
+                                    for (const prop in data.toJSON()) {
+                                        calendarArr.push({time:data.toJSON()[prop].time, title: data.toJSON()[prop].event, description: data.toJSON()[prop].description})
+                                    }
+                                    this.setState({
+                                        data: calendarArr
+                                    })
+                                })
                             }
                         }
                     />
                     <View>
-                        <Text>
-                            {this.state.date}
-                        </Text>
+                        
                     </View> 
                     <Timeline
                         style={{ paddingTop: 30}}
@@ -66,16 +92,6 @@ export default class TimeTable extends React.Component {
                     onPress = {
                         () => { 
                             this.props.navigation.navigate('SetTime');
-                            // let ndata = {};
-                            // ndata['time'] = '18:00';
-                            // ndata['title'] = 'new Event';
-                            // ndata['description'] = 'new Event for test';
-                            // let dataNew = this.state.data
-                            // dataNew.push(ndata);
-                            // console.log(dataNew)
-                            // this.setState({
-                            //     data: dataNew
-                            // })
                         }
                     }
                 />

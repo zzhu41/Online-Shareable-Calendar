@@ -30,7 +30,8 @@ export default class SignupPage extends React.Component {
           name: this.state.name,
           password: hashCode(this.state.password),
           DOB: this.state.DOB,
-          location: this.state.location
+          location: this.state.location,
+          friendList: []
         }).then((() => {
           console.log('sign up success')
         })).catch((error) => {
