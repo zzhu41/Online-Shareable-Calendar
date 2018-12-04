@@ -7,7 +7,9 @@ import { createBottomTabNavigator, createStackNavigator } from 'react-navigation
 import ExplorePage from './ExplorePage';
 import SendPostPage from './SendPostPage';
 import setCalendarPage from './SetCalendarPage';
-
+import FriendProfile from './FriendProfile';
+import DataVisPage from './DataVisPage';
+import PostComment from './PostComment';
 /**
  * disable dual navigator warning for test purpose
  */
@@ -52,6 +54,9 @@ const Explore = createStackNavigator({
     },
     SendPost: {
         screen: SendPostPage
+    },
+    PostComment: {
+        screen: PostComment
     }
 })
 
@@ -59,14 +64,27 @@ const Friends = createStackNavigator({
     Friends: {
         screen: FriendPage
     },
-    Profile: {
-        screen: ProfilePage
+    FriendProfile: {
+        screen: FriendProfile
+    },
+    SetTime: {
+        screen: setCalendarPage
     }
 })
 
+const Profiles = createStackNavigator({
+    Profile: {
+        screen: ProfilePage
+    },
+    Data: {
+        screen: DataVisPage
+    }
+})
+
+
 const TabNavigator = createBottomTabNavigator({
     Calendar: Time,
-    Friends: FriendPage,
+    Friends: Friends,
     Explore: Explore,
-    Profile: ProfilePage
+    Profile: Profiles
 })

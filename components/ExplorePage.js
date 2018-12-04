@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, AlertIOS, RefreshControl,  Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, AlertIOS, RefreshControl,  Alert, Image, TouchableOpacity, AsyncStorage} from 'react-native';
 import { DrawerNavigator } from 'react-navigation';
 import Timeline from 'react-native-timeline-listview'
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
@@ -17,7 +17,10 @@ export default class ExplorePage extends React.Component {
         super(props);
         this.state = {
             refreshing: false,
-            postList: []
+            postList: [],
+            bubbleIcon: '',
+            heartColor: null,
+            username:''
         }
     }
 
@@ -34,11 +37,15 @@ export default class ExplorePage extends React.Component {
         });
     }
 
-    componentWillMount(){
+    async componentWillMount(){
+        const username = await AsyncStorage.getItem('username');
+        let bubble = require('../assets/heart.png');
         firebase.database().ref(`posts`).on('value', (data) => {
             console.log(data)
             this.setState({
-                postList: Object.values(data.toJSON())
+                postList: Object.values(data.toJSON()),
+                bubbleIcon : bubble,
+                username: username
             })
         })
         //console.log(this.state.postList)
@@ -67,7 +74,41 @@ export default class ExplorePage extends React.Component {
                         <ListItem 
                             key = {i}
                             title={`${l.postContext}`}
-                            subtitle={`user: ${l.username}`}
+                            subtitle={
+                                <View style={styles.iconBar}>
+                                    <TouchableOpacity onPress = {() => {
+                                        if (this.state.heartColor === null) {
+                                            this.setState({heartColor: 'rgb(252,61,57)'})
+                                        } else {
+                                            this.setState({heartColor: null})
+                                        }
+                                        !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
+                                        if (this.state.heartColor === 'rgb(252,61,57)') {
+                                            firebase.database().ref(`posts/${l.username}-${l.date}`).update({
+                                                likes: l.likes-1
+                                            })
+                                        } else {
+                                            firebase.database().ref(`posts/${l.username}-${l.date}`).update({
+                                                likes: l.likes+1
+                                            })
+                                        }
+                                        }}>
+                                        <Image source={require('../assets/heart.png')}
+                                        style={{width: 30, height: 30, marginLeft: 15, tintColor: this.state.heartColor}}
+                                    />
+                                    </TouchableOpacity>
+                                    <Text>
+                                        {l.likes}
+                                    </Text>
+                                    <TouchableOpacity onPress = {() => {
+                                        this.props.navigation.push('PostComment', {username: this.state.username, postid: `${l.username}-${l.date}`})
+                                    }}>
+                                        <Image source={require('../assets/bubble.png')}
+                                        style={{width: 25, height: 25, marginLeft: 15}}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            }
                             onLongPress = {
                                 () => {
                                     Alert.alert(
@@ -103,3 +144,14 @@ export default class ExplorePage extends React.Component {
         );
     }
 };
+
+const styles = StyleSheet.create({
+    iconBar: {
+        height: 40,
+        width: 100 + '%',
+        borderColor: 'rgb(233, 233, 233)',
+        flexDirection: 'row',
+        alignItems: 'center'
+    }
+  });
+  

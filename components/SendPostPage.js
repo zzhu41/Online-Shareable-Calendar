@@ -52,7 +52,10 @@ export default class SendPostPage extends React.Component {
                                     firebase.database().ref(`posts/${username}-${today.toString()}`).set({
                                         username: username,
                                         postContext: this.state.postContext,
-                                        date: today.toString()
+                                        date: today.toString(),
+                                        likes: 0,
+                                        comments: [],
+                                        id : `${username}-${today.toString()}`
                                     }).then((() => {
                                         console.log('Send post successfully')
                                     })).catch((error) => {

@@ -20,6 +20,10 @@ export default class FriendPage extends React.Component {
         }
     }
 
+    static navigationOptions = {
+        header: null
+    }
+
     _onRefresh = () => {
         this.setState({
             refreshing: true
@@ -73,12 +77,13 @@ export default class FriendPage extends React.Component {
                                       },
                                       {
                                         text: 'Add Friend',
-                                        onPress: (username) => {
+                                        onPress: async (username) => {
+                                            const ownerusername = await AsyncStorage.getItem('username');
                                             this.setState({
                                                 friend: username
                                             })
                                             !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
-                                            firebase.database().ref(`users/${username}/friendList`).push({
+                                            firebase.database().ref(`users/${ownerusername}/friendList`).push({
                                                 username: username
                                             })
                                         },
@@ -101,9 +106,11 @@ export default class FriendPage extends React.Component {
                     {
                         Object.values(this.state.friendList).map((l, i) => (
                         <ListItem 
+                            roundAvatar
+                            avatar={{ uri: "https://upload.wikimedia.org/wikipedia/commons/9/93/Default_profile_picture_%28male%29_on_Facebook.jpg"  }}
                             key = {i}
                             title={`${l.username}`}
-                            onPress = {()=>{this.props.navigation.navigate('Profile')}}
+                            onPress = {()=>{this.props.navigation.push('FriendProfile', {username: l.username})}}
                             hideChevron
                         />
                         ))

@@ -42,7 +42,14 @@ export default class SetCalendarPage extends React.Component {
                         title="Set"
                         onPress = {
                             async () => {
-                                const username = await AsyncStorage.getItem('username');
+                                let username = '';
+                                console.log('21312312321')
+                                console.log(this.state.useruser)
+                                if (this.props.navigation.state.params) {
+                                    username = this.props.navigation.state.params.user;
+                                } else {
+                                    username = await AsyncStorage.getItem('username');
+                                }
                                 !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
                                 firebase.database().ref(`users/${username}/calendar/${this.state.date}/${Math.floor(Math.random() * 10000000)}`).set({
                                     time: this.state.time,
@@ -53,7 +60,11 @@ export default class SetCalendarPage extends React.Component {
                                 })).catch((error) => {
                                     console.log(error);
                                 })
-                                this.props.navigation.navigate('Time');
+                                if (this.props.navigation.state.params) {
+                                    this.props.navigation.navigate('FriendProfile');
+                                } else {
+                                    this.props.navigation.navigate('Time');
+                                }
                             }
                         }
                     />

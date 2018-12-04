@@ -8,6 +8,23 @@ import ExplorePage from '../components/ExplorePage';
 import FriendPage from '../components/FriendPage';
 import SendPostPage from '../components/SendPostPage';
 import SetCalendarPage from '../components/SetCalendarPage';
+import PostComment from '../components/PostComment';
+import FriendProfile from '../components/FriendProfile';
+
+it('test friendprofile page renders correctly', () => {
+  const out = renderer
+    .create(<FriendProfile />)
+    .toJSON();
+  expect(out).toMatchSnapshot();
+});
+
+it('test signup page renders correctly', () => {
+  const out = renderer
+    .create(<PostComment />)
+    .toJSON();
+  expect(out).toMatchSnapshot();
+});
+
 
 it('test signup page renders correctly', () => {
   const out = renderer

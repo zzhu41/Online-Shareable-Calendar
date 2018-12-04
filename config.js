@@ -21,3 +21,5 @@ export function hashCode(str){
     }
     return hash;
 }
+export const event1 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0];
+export const event2 = [ 1, 0, 3, 0, 0, 0, 0 ];
