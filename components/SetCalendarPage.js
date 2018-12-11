@@ -51,15 +51,41 @@ export default class SetCalendarPage extends React.Component {
                                     username = await AsyncStorage.getItem('username');
                                 }
                                 !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
-                                firebase.database().ref(`users/${username}/calendar/${this.state.date}/${Math.floor(Math.random() * 10000000)}`).set({
-                                    time: this.state.time,
-                                    event: this.state.event,
-                                    description: this.state.description
-                                }).then((() => {
-                                    console.log('Set time table successfully')
-                                })).catch((error) => {
-                                    console.log(error);
-                                })
+                                if (this.props.navigation.state.params) {
+                                    let today = new Date();
+                                    let dd = today.getDate();
+                                    let mm = today.getMonth()+1; 
+                                    let yyyy = today.getFullYear();
+                                    let time = today.getTime()
+                                    if(dd<10) {
+                                        dd = '0'+dd
+                                    } 
+                                    if(mm<10) {
+                                        mm = '0'+mm
+                                    } 
+                                    today = mm + '-' + dd + '-' + yyyy + '-' + time;
+                                    let ownerusername = await AsyncStorage.getItem('username');
+                                    firebase.database().ref(`users/${username}/notifications/${ownerusername}-calendar-${today.toString()}`).set({
+                                        type: 'want to add a event',
+                                        username: ownerusername,
+                                        read: false,
+                                        id: `${ownerusername}-calendar-${today.toString()}`,
+                                        time: this.state.time,
+                                        event: this.state.event,
+                                        description: this.state.description,
+                                        date: this.state.date
+                                    })
+                                } else {
+                                    firebase.database().ref(`users/${username}/calendar/${this.state.date}/${Math.floor(Math.random() * 10000000)}`).set({
+                                        time: this.state.time,
+                                        event: this.state.event,
+                                        description: this.state.description
+                                    }).then((() => {
+                                        console.log('Set time table successfully')
+                                    })).catch((error) => {
+                                        console.log(error);
+                                    })
+                                }
                                 if (this.props.navigation.state.params) {
                                     this.props.navigation.navigate('FriendProfile');
                                 } else {

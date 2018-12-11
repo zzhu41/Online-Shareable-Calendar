@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, AlertIOS, TextInput, Dimensions, Button, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, AlertIOS, TextInput, Dimensions, Button, AsyncStorage, Image } from 'react-native';
 import { DrawerNavigator } from 'react-navigation';
 import Timeline from 'react-native-timeline-listview'
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import { Container, Header, Body, Grid, Row, Col, Content, Separator, Left, Right} from 'native-base';
 import { FloatingAction } from 'react-native-floating-action';
 import ActionButton from 'react-native-action-button';
+import { ImagePicker, Permissions } from 'expo';
 import Modal from 'react-native-modalbox';
 import { config, hashCode } from '../config';
 import firebase from 'firebase';
@@ -13,6 +14,10 @@ export default class SendPostPage extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            postImage: '',
+            context:'Add Photo'
+        }
     }
 
     static navigationOptions = {
@@ -55,7 +60,8 @@ export default class SendPostPage extends React.Component {
                                         date: today.toString(),
                                         likes: 0,
                                         comments: [],
-                                        id : `${username}-${today.toString()}`
+                                        id : `${username}-${today.toString()}`,
+                                        imageURL: this.state.postImage
                                     }).then((() => {
                                         console.log('Send post successfully')
                                     })).catch((error) => {
@@ -79,6 +85,43 @@ export default class SendPostPage extends React.Component {
                             })
                         }
                     />
+                    <Button
+                        onPress={ async() => {
+                            console.log('OPEN PHOTO ALBUM FROM SEND POST');
+                            const permissions = Permissions.CAMERA_ROLL;
+                            const { status } = await Permissions.askAsync(permissions);
+                            let result = await ImagePicker.launchImageLibraryAsync({
+                                allowsEditing: true,
+                                aspect: [4, 3],
+                                base64: true
+                            });
+                            if (!result.cancelled) {
+                                const username = await AsyncStorage.getItem('username');
+                                !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
+                                console.log(result.uri)
+                                const response = await fetch(result.uri.replace('file://', ''));
+                                const blob = await response.blob();
+                                let ref = firebase.storage().ref().child(`images/${username}/posts`);
+                                let metadata = {
+                                    contentType: 'image/jpeg',
+                                };
+                                await ref.put(blob, metadata);
+                                let newUrl = result.uri;
+                                console.log(newUrl)
+                                this.setState({
+                                    postImage: newUrl,
+                                    context: 'Change Photo'
+                                })
+                            }
+                        }}
+                        title={this.state.context}
+                        color="steelblue"
+                        accessibilityLabel="Add or change photo"
+                    />
+                    <Image
+                        style={{width: width*0.7, height: width*0.7}}
+                        source={{uri: this.state.postImage}}                                    
+                    />
                 </View>
             </Container>
         );
@@ -92,7 +135,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     input: {
-        height: width*0.5, 
+        height: width*0.2, 
         width: width*0.95,
         borderColor: 'gray', 
         borderWidth: 1, 
@@ -102,5 +145,3 @@ const styles = StyleSheet.create({
         paddingTop: 20
     }
 });
-  
-

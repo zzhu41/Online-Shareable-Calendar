@@ -96,10 +96,6 @@ export default class ProfilePage extends React.Component {
                                                   };
                                                 await ref.put(blob, metadata);
                                                 let newUrl = result.uri;
-                                                // const newurl = firebase.storage().ref(`images/${username}`).getDownloadURL().then((url) => {
-                                                //     console.log(url)
-                                                //     newUrl = url
-                                                // });
                                                 console.log(newUrl)
                                                 let imageArr = this.state.image;
                                                 if (imageArr.length === 1) {

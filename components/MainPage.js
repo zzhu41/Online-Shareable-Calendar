@@ -10,6 +10,8 @@ import setCalendarPage from './SetCalendarPage';
 import FriendProfile from './FriendProfile';
 import DataVisPage from './DataVisPage';
 import PostComment from './PostComment';
+import NotificationTab from './NotificationTab';
+
 /**
  * disable dual navigator warning for test purpose
  */
@@ -81,10 +83,17 @@ const Profiles = createStackNavigator({
     }
 })
 
+const Noti = createBottomTabNavigator({
+    Noti: {
+        screen: NotificationTab
+    }
+})
+
 
 const TabNavigator = createBottomTabNavigator({
     Calendar: Time,
     Friends: Friends,
+    Notification: NotificationTab,
     Explore: Explore,
     Profile: Profiles
 })

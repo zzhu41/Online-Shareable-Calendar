@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, AlertIOS, RefreshControl,  Alert, Image, TouchableOpacity, AsyncStorage} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, AlertIOS, RefreshControl, Dimensions, Alert, Image, TouchableOpacity, AsyncStorage} from 'react-native';
 import { DrawerNavigator } from 'react-navigation';
 import Timeline from 'react-native-timeline-listview'
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
@@ -11,6 +11,7 @@ import { Avatar, ListItem, List } from 'react-native-elements';
 import Button from 'react-native-button';
 import { config, hashCode } from '../config';
 import firebase from 'firebase';
+import Search from 'react-native-search-box';
 export default class ExplorePage extends React.Component {
 
     constructor(props) {
@@ -20,7 +21,9 @@ export default class ExplorePage extends React.Component {
             postList: [],
             bubbleIcon: '',
             heartColor: null,
-            username:''
+            username:'',
+            postDisplay: [],
+            search: ''
         }
     }
 
@@ -45,7 +48,8 @@ export default class ExplorePage extends React.Component {
             this.setState({
                 postList: Object.values(data.toJSON()),
                 bubbleIcon : bubble,
-                username: username
+                username: username,
+                postDisplay: Object.values(data.toJSON())
             })
         })
         //console.log(this.state.postList)
@@ -61,6 +65,22 @@ export default class ExplorePage extends React.Component {
                         </Text>
                     </Body>
                 </Header>
+                <Search
+                    loading = {this.state.loading}
+                    ref="search for posts"
+                    onChangeText = {
+                    (text) => {
+                        console.log(`TEXT: ${text} CHANGED [DEBUG]`)
+                    }
+                    }
+                    onSearch = {
+                    (text) => {
+                        this.setState({
+                            search: text
+                        })
+                    }
+                    }
+                />
                 <ScrollView 
                     refreshControl={
                         <RefreshControl
@@ -70,11 +90,29 @@ export default class ExplorePage extends React.Component {
                     }>    
                     <View>
                     {
-                        this.state.postList.map((l, i) => (
+                        this.state.postDisplay.filter(((l) => 
+                            this.state.search === '' ? l : l.username === this.state.search || l.postContext.includes(this.state.search)
+                        )).map((l, i) => (
                         <ListItem 
                             key = {i}
-                            title={`${l.postContext}`}
                             subtitle={
+                                <View>
+                                <View style={{flex: 2, flexDirection: 'row'}}>
+                                    <Image
+                                        style={{width: width*0.1, height: width*0.1, borderRadius: width*0.05}}
+                                        source={{uri: "https://upload.wikimedia.org/wikipedia/commons/9/93/Default_profile_picture_%28male%29_on_Facebook.jpg" }}                                    
+                                    />
+                                    <Text style={{paddingLeft: 20, fontSize:16}}>
+                                        {l.username}
+                                    </Text>
+                                </View>
+                                <Image
+                                    style={{width: width*0.95, height: width*0.95}}
+                                    source={{uri: l.imageURL}}                                    
+                                />
+                                <Text style={{paddingLeft: 10, fontSize: 18}}>
+                                    {l.postContext}
+                                </Text>
                                 <View style={styles.iconBar}>
                                     <TouchableOpacity onPress = {() => {
                                         if (this.state.heartColor === null) {
@@ -107,6 +145,7 @@ export default class ExplorePage extends React.Component {
                                         style={{width: 25, height: 25, marginLeft: 15}}
                                         />
                                     </TouchableOpacity>
+                                </View>
                                 </View>
                             }
                             onLongPress = {
@@ -144,6 +183,8 @@ export default class ExplorePage extends React.Component {
         );
     }
 };
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     iconBar: {

@@ -78,13 +78,31 @@ export default class FriendPage extends React.Component {
                                       {
                                         text: 'Add Friend',
                                         onPress: async (username) => {
+                                            let today = new Date();
+                                            let dd = today.getDate();
+                                            let mm = today.getMonth()+1; 
+                                            let yyyy = today.getFullYear();
+                                            let time = today.getTime()
+                                            if(dd<10) {
+                                                dd = '0'+dd
+                                            } 
+                                            if(mm<10) {
+                                                mm = '0'+mm
+                                            } 
+                                            today = mm + '-' + dd + '-' + yyyy + '-' + time;
                                             const ownerusername = await AsyncStorage.getItem('username');
                                             this.setState({
                                                 friend: username
                                             })
                                             !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
-                                            firebase.database().ref(`users/${ownerusername}/friendList`).push({
-                                                username: username
+                                            // firebase.database().ref(`users/${ownerusername}/friendList`).push({
+                                            //     username: username
+                                            // })
+                                            firebase.database().ref(`users/${username}/notifications/${ownerusername}-addfriend-${today.toString()}`).set({
+                                                type: 'send you a friend request',
+                                                username: ownerusername,
+                                                read: false,
+                                                id: `${ownerusername}-addfriend-${today.toString()}`
                                             })
                                         },
                                       },
